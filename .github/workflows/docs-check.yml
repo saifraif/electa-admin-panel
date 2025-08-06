@@ -1,0 +1,23 @@
+name: Documentation Link Check
+on: [push, pull_request]
+
+jobs:
+  link-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for broken links
+        run: |
+          grep -ohP 'https?://[^\s)]+' README.md | while read -r url; do
+            # Skip localhost URLs (remove if you want to check these)
+            if [[ $url == *"localhost"* ]]; then
+              continue
+            fi
+            if ! curl --head --silent --fail "$url" > /dev/null; then
+              echo "::error::Broken link detected: $url"
+              exit 1
+            else
+              echo "✓ Valid link: $url"
+            fi
+          done
+
