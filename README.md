@@ -68,3 +68,14 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## ��� Cross-Repository Documentation
+
+This repo hosts **all centralized documentation** for the ELECTA project.
+
+| Repository                                                    | Key Docs Location             |
+| ------------------------------------------------------------- | ----------------------------- |
+| [Backend API](https://github.com/saifraif/electa-backend-api) | See `unified-docs/technical/` |
+| [Android App](https://github.com/saifraif/electa-android-app) | See `unified-docs/project/`   |
+
+��� [Browse Documentation](/unified-docs)
