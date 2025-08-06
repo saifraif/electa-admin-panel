@@ -10,4 +10,8 @@ jobs:
         with:
           node-version: 18
       - run: npm ci
-      - run: CI=true npm test
+      - run: npm run test:ci # Use your custom CI test command
+      - run: |
+          if [ -f "coverage/lcov.info" ]; then
+            npx coveralls < coverage/lcov.info
+          fi
