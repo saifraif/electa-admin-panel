@@ -1,6 +1,6 @@
 import React from "react";
 
-function DashboardPage() {
+const DashboardPage: React.FC = () => {
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
     window.location.reload();
@@ -16,6 +16,6 @@ function DashboardPage() {
       <button onClick={handleLogout}>Logout</button>
     </div>
   );
-}
+};
 
 export default DashboardPage;

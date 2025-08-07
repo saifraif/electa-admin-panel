@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "../App.css"; // We'll share the main CSS file for now
+import "../App.css";
 
-function LoginPage() {
+const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     const params = new URLSearchParams();
     params.append("username", email);
     params.append("password", password);
@@ -22,8 +21,6 @@ function LoginPage() {
 
       alert("Login successful!");
       localStorage.setItem("admin_token", token);
-
-      // This reloads the page to let the main router redirect to the dashboard
       window.location.reload();
     } catch (error) {
       alert("Login failed. Please check your credentials.");
@@ -60,6 +57,6 @@ function LoginPage() {
       </form>
     </div>
   );
-}
+};
 
 export default LoginPage;

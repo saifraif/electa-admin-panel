@@ -1,22 +1,33 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import "./App.css";
+import LoginPage from "./components/LoginPage";
+import DashboardPage from "./components/DashboardPage";
 
-function App() {
+const App: React.FC = () => {
+  const token = localStorage.getItem("admin_token");
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route
+            path="/login"
+            element={token ? <Navigate to="/" /> : <LoginPage />}
+          />
+          <Route
+            path="/"
+            element={token ? <DashboardPage /> : <Navigate to="/login" />}
+          />
+        </Routes>
+      </div>
+    </Router>
   );
-}
+};
+
+export default App;
