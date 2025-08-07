@@ -1,4 +1,5 @@
 import React from "react";
+import IdeologyManager from "../components/IdeologyManager"; // Import the new component
 
 const Dashboard = () => {
   const handleLogout = () => {
@@ -7,10 +8,21 @@ const Dashboard = () => {
   };
 
   return (
-    <div>
-      <h1>Welcome to the ELECTA Admin Dashboard</h1>
-      <p>This is where the main content and management tools will be.</p>
-      <button onClick={handleLogout}>Logout</button>
+    <div style={{ padding: "2rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <h1>ELECTA Admin Dashboard</h1>
+        <button onClick={handleLogout}>Logout</button>
+      </div>
+      <hr style={{ margin: "1rem 0" }} />
+
+      {/* Render the IdeologyManager component here */}
+      <IdeologyManager />
     </div>
   );
 };

@@ -1,15 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react"; // 1. Import useCallback
 import axios from "axios";
 
-function IdeologyManager() {
-  const [ideologies, setIdeologies] = useState([]);
+interface Ideology {
+  id: string;
+  title: string;
+  description?: string;
+}
+
+const IdeologyManager: React.FC = () => {
+  const [ideologies, setIdeologies] = useState<Ideology[]>([]);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
+  const token = localStorage.getItem("admin_token");
 
-  // Function to fetch the list of ideologies from the backend
-  const fetchIdeologies = async () => {
+  // 2. Wrap the function in useCallback
+  const fetchIdeologies = useCallback(async () => {
     try {
-      const token = localStorage.getItem("admin_token");
       const response = await axios.get(
         "http://localhost:8000/api/v1/ideologies",
         {
@@ -20,43 +26,35 @@ function IdeologyManager() {
     } catch (error) {
       console.error("Failed to fetch ideologies", error);
     }
-  };
+  }, [token]); // Add token as a dependency for the callback
 
-  // useEffect hook to run fetchIdeologies when the component first loads
+  // 3. Add fetchIdeologies to the dependency array
   useEffect(() => {
     fetchIdeologies();
-  }, []);
+  }, [fetchIdeologies]);
 
-  const handleCreate = async (event) => {
+  const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const token = localStorage.getItem("admin_token");
       await axios.post(
         "http://localhost:8000/api/v1/ideologies",
         { title: newTitle, description: newDescription },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      // --- ADJUSTMENT IMPLEMENTED ---
-      alert("Ideology created successfully!"); // 1. Give user feedback
-      fetchIdeologies(); // 2. Refresh the list
-      // --- END ADJUSTMENT ---
-
+      alert("Ideology created successfully!");
+      fetchIdeologies();
       setNewTitle("");
       setNewDescription("");
     } catch (error) {
       console.error("Failed to create ideology", error);
-      alert("Failed to create ideology. Check the console for details.");
+      alert("Failed to create ideology.");
     }
   };
 
   return (
     <div>
-      <h2>Manage Ideology Checklist</h2>
-
-      {/* Form for creating new ideologies */}
-      <form onSubmit={handleCreate}>
-        <h3>Create New Ideology Point</h3>
+      <h3>Manage Ideology Checklist</h3>
+      <form onSubmit={handleCreate} style={{ marginBottom: "2rem" }}>
         <input
           type="text"
           value={newTitle}
@@ -64,21 +62,16 @@ function IdeologyManager() {
           placeholder="Title (e.g., Judicial Reform)"
           required
         />
-        <br />
         <input
           type="text"
           value={newDescription}
           onChange={(e) => setNewDescription(e.target.value)}
           placeholder="Description (optional)"
         />
-        <br />
-        <button type="submit">Create</button>
+        <button type="submit">Create New</button>
       </form>
 
-      <hr />
-
-      {/* List of existing ideologies */}
-      <h3>Existing Ideologies</h3>
+      <h4>Existing Ideologies</h4>
       <ul>
         {ideologies.map((ideology) => (
           <li key={ideology.id}>{ideology.title}</li>
@@ -86,6 +79,6 @@ function IdeologyManager() {
       </ul>
     </div>
   );
-}
+};
 
 export default IdeologyManager;
