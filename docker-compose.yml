@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000" # Mapping your local port 3002
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - PORT=3000 # Ensure React starts on port 3000 inside the container
+    # This new command forces a clean install every time the container starts
+    command: sh -c "npm install && npm start"
