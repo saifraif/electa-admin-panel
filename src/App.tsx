@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -8,7 +9,9 @@ import {
 import "./App.css";
 import LoginPage from "./components/LoginPage";
 import DashboardPage from "./components/DashboardPage";
+import IngestPage from "./pages/IngestPage";
 
+const token = localStorage.getItem("access_token"); // or your actual key
 const App: React.FC = () => {
   // ✅ Standardize on admin_token
   const adminToken = localStorage.getItem("admin_token");
@@ -24,6 +27,10 @@ const App: React.FC = () => {
           <Route
             path="/"
             element={adminToken ? <DashboardPage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/ingest"
+            element={token ? <IngestPage /> : <Navigate to="/login" />}
           />
         </Routes>
       </div>
