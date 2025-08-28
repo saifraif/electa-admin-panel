@@ -1,12 +1,79 @@
 services:
-  web:
-    build: .
-    ports:
-      - "3000:3000" # Mapping your local port 3002
-    volumes:
-      - .:/app
-      - /app/node_modules
+  postgres:
+    image: postgres:15-alpine
+    container_name: electa-postgres
+    restart: always
     environment:
-      - PORT=3000 # Ensure React starts on port 3000 inside the container
-    # This new command forces a clean install every time the container starts
-    command: sh -c "npm install && npm start"
+      POSTGRES_USER: electa
+      POSTGRES_PASSWORD: electa
+      POSTGRES_DB: electa_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U electa"]
+      interval: 10s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: electa-redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./app/electa-backend-api
+    container_name: electa-backend
+    restart: always
+    env_file:
+      - ./app/electa-backend-api/.env
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "
+      alembic upgrade head &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+
+  admin-panel:
+    build:
+      context: ./app/electa-admin-panel
+      target: development
+    container_name: electa-admin-panel
+    depends_on:
+      - backend
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - PORT=${PORT:-3000}
+      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL:-http://localhost:8000}
+    volumes:
+      - ./app/electa-admin-panel:/app
+      - /app/node_modules
+    profiles:
+      - dev
+    command: npm start
+
+  admin-panel-prod:
+    build:
+      context: ./app/electa-admin-panel
+      target: production
+    container_name: electa-admin-panel-prod
+    depends_on:
+      - backend
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL:-http://backend:8000}
+    profiles:
+      - prod
+    command: serve -s build -l 3000
+
+volumes:
+  postgres_data:

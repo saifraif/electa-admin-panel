@@ -1,20 +1,29 @@
-# Use an official Node.js runtime as a parent image
-FROM node:18-alpine
+# ===== Stage 1: Base =====
+FROM node:18-alpine AS base
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json AND package-lock.json to leverage Docker cache
 COPY package*.json ./
 
-# Clean the npm cache and run a clean install to ensure all dependencies are fetched
-RUN npm cache clean --force && npm install
+RUN npm ci --legacy-peer-deps
 
-# Copy the rest of the application's source code
 COPY . .
 
-# Expose the port the app runs on
+# ===== Stage 2: Development =====
+FROM base AS development
+
 EXPOSE 3000
 
-# Command to run the application
 CMD ["npm", "start"]
+
+# ===== Stage 3: Production =====
+FROM base AS production
+
+RUN npm run build
+RUN npm install -g serve
+
+WORKDIR /app
+
+EXPOSE 3000
+
+CMD ["serve", "-s", "build", "-l", "3000"]

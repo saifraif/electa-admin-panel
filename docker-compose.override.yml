@@ -1,0 +1,7 @@
+services:
+  admin-panel:
+    build:
+      target: development
+    command: npm start
+    environment:
+      - REACT_APP_BACKEND_URL=http://backend:8000
